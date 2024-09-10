@@ -3,13 +3,12 @@ import json
 import requests
 import urllib.parse
 from dotenv import load_dotenv
-
 class API:
     def __init__(self) -> any:
         # Access credentials.
-        self.GRP_URL: str = None
         self.API_KEY: str = None
-        self.GIT_TKN: str = None
+        self.GIT_TOK: str = None
+        self.credentials: bool = False
 
         # Repository information.
         self.clip_user: str = None
@@ -28,18 +27,18 @@ class API:
             # Set repository information via CLI prompts.
             self.clip_user = input("Repository Username (owner of repository): ")
             self.clip_remote = input("Repository Service (e.g., github/gitlab): ")
-            self.clip_repository = f"{self.clip_user}/{input("Repository Path (e.g., my-repo-name/): ")}"
+            self.clip_repository = f"{self.clip_user}/{input('Repository Path (e.g., my-repo-name/): ')}"
             self.clip_branch = input("Repository Branch (e.g., main): ")
 
             # Access credentials from .env file.
             load_dotenv("../.env")
             self.API_KEY = os.getenv("API_KEY")
-            self.GIT_TKN = os.getenv("GIT_TKN")
+            self.GIT_TOK = os.getenv("GIT_TOK")
 
             # Status.
             print(f"\nRetrieving Credentials...")
             print(f"    ├ {f'API_KEY found: {self.API_KEY[0]}...{self.API_KEY[-1]}.' if self.API_KEY else 'API_KEY not found'}")
-            print(f"    └ {f'GIT_TKN found: {self.GIT_TKN[0]}...{self.GIT_TKN[-1]}.' if self.GIT_TKN else 'GIT_TKN not found'}")
+            print(f"    └ {f'GIT_TOK found: {self.GIT_TOK[0]}...{self.GIT_TOK[-1]}.' if self.GIT_TOK else 'GIT_TOK not found'}")
 
             # Encode and append repository identifier for indexing progress endpoint URL.
             repo_id: str = f"{self.clip_remote}:{self.clip_branch}:{self.clip_repository}"
@@ -49,13 +48,13 @@ class API:
         except Exception as e:
             print(f"Error: {e}")
 
-    # 1. Call Greptile API to index a Github repository.
+    # 1. Index a Github repository.
     def index(self, repo_service: str = "", repo_path: str = "", repo_branch: str = "main", mode: str = "CLI") -> None:
         if mode == "CLI":
             try:
                 headers: dict = {
                     'Authorization': f'Bearer {self.API_KEY}',
-                    'X-Github-Token': self.GIT_TKN,
+                    'X-Github-Token': self.GIT_TOK,
                     'Content-Type': 'application/json'
                 }
                 payload: dict = {
@@ -63,7 +62,7 @@ class API:
                     "repository": self.clip_repository,
                     "branch": self.clip_branch if self.clip_branch != "" else "main",
                 }
-                print(f"\nAttempting to index repository...\n   ├ Service: {payload["remote"]}\n   ├ Branch: {payload["branch"]}\n   └ Repository: {payload["repository"]}")
+                print(f"\nAttempting to index repository...\n   ├ Service: {payload['remote']}\n   ├ Branch: {payload['branch']}\n   └ Repository: {payload['repository']}")
 
                 response = requests.post(self.url_index, json=payload, headers=headers)
                 print(f"\nResponse:\n{json.dumps(response.json(), indent=4)}")
@@ -79,7 +78,7 @@ class API:
         try:
             headers: dict = {
                 'Authorization': f'Bearer {self.API_KEY}',
-                'X-Github-Token': self.GIT_TKN
+                'X-Github-Token': self.GIT_TOK
             }
             print(f"\nChecking indexing progress:\n    └ URL: ...{self.url_progress[24:]}.")
 
@@ -97,7 +96,7 @@ class API:
             try:
                 headers = {
                     'Authorization': f'Bearer {self.API_KEY}',
-                    'X-Github-Token': self.GIT_TKN,
+                    'X-Github-Token': self.GIT_TOK,
                     'Content-Type': 'application/json'
                 }
                 payload = {
@@ -117,7 +116,8 @@ class API:
                     ],
                     "sessionId": f"{uid}-session-id" # Key sessionId retrieves chat history.
                 }
-                print(f"\Requesting completion to prompt...\n   ├ prompt: {payload["messages"][0]["content"]}\n   ├ Remote: {payload["repositories"][0]["remote"]}\n   ├ Branch: {payload["repositories"][0]["branch"]}\n   └ Repository: {payload["repositories"][0]["repository"]}")
+                print(f"{payload['messages'][0]['content']}")
+                print(f"\Requesting completion to prompt...\n   ├ Prompt: {payload['messages'][0]['content']}\n   ├ Remote: {payload['repositories'][0]['remote']}\n   ├ Branch: {payload['repositories'][0]['branch']}\n   └ Repository: {payload['repositories'][0]['repository']}")
 
                 response = requests.post(self.url_query, json=payload, headers=headers)
                 print(f"\nResponse:\n{json.dumps(response.json(), indent=4)}")
