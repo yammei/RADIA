@@ -39,7 +39,9 @@ def choose_menu(option):
         print("Checking Indexing Progress...")
         api.index_progress()
     elif "4" in option:
-        print("Posting Repository Query...")
+        print("Preparing for Repository Query...")
+        prompt: str = input("Enter prompt (e.g., Help me understand this codebase.):")
+        api.query(prompt=prompt)
     else:
         print("Invalid option selected.")
 

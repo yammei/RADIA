@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 import urllib.parse
 from dotenv import load_dotenv
@@ -16,6 +17,11 @@ class API:
         self.clip_repository: str = None
         self.clip_branch: str = None
 
+        # API endpoints.
+        self.url_index: str = "https://api.greptile.com/v2/repositories"
+        self.url_progress: str = "https://api.greptile.com/v2/repositories/" # Call connect() to complete URL.
+        self.url_query: str = "https://api.greptile.com/v2/query"
+
     # 0. Access API.
     def connect(self) -> None:
         try:
@@ -29,13 +35,16 @@ class API:
             load_dotenv("../.env")
             self.API_KEY = os.getenv("API_KEY")
             self.GIT_TKN = os.getenv("GIT_TKN")
-            self.GRP_URL = os.getenv("GRP_URL")
 
             # Status.
             print(f"\nRetrieving Credentials...")
-            print(f"    ├ {f'GRP_URL found: ..{self.GRP_URL[20:-8]}...' if self.GRP_URL else 'GRP_URL not found'}")
             print(f"    ├ {f'API_KEY found: {self.API_KEY[0]}...{self.API_KEY[-1]}.' if self.API_KEY else 'API_KEY not found'}")
             print(f"    └ {f'GIT_TKN found: {self.GIT_TKN[0]}...{self.GIT_TKN[-1]}.' if self.GIT_TKN else 'GIT_TKN not found'}")
+
+            # Encode and append repository identifier for indexing progress endpoint URL.
+            repo_id: str = f"{self.clip_remote}:{self.clip_branch}:{self.clip_repository}"
+            repo_id = urllib.parse.quote(repo_id, safe="")
+            self.url_progress += repo_id
 
         except Exception as e:
             print(f"Error: {e}")
@@ -56,8 +65,8 @@ class API:
                 }
                 print(f"\nAttempting to index repository...\n   ├ Service: {payload["remote"]}\n   ├ Branch: {payload["branch"]}\n   └ Repository: {payload["repository"]}")
 
-                response = requests.post(self.GRP_URL, json=payload, headers=headers)
-                print(f"Response:\n{response.json()}")
+                response = requests.post(self.url_index, json=payload, headers=headers)
+                print(f"\nResponse:\n{json.dumps(response.json(), indent=4)}")
 
             except Exception as e:
                 print(f"Error: {e}")
@@ -68,54 +77,52 @@ class API:
     # 2. Check progress of repo indexing.
     def index_progress(self) -> None:
         try:
-            # Encode repository identifier.
-            repo_id: str = f"{self.clip_remote}:{self.clip_branch}:{self.clip_repository}"
-            repo_id = urllib.parse.quote(repo_id, safe="")
-            url: str = f'https://api.greptile.com/v2/repositories/{repo_id}'
-
             headers: dict = {
                 'Authorization': f'Bearer {self.API_KEY}',
                 'X-Github-Token': self.GIT_TKN
             }
-            print(f"\nChecking indexing progress:\n    └ URL: ...{url[24:]}.")
+            print(f"\nChecking indexing progress:\n    └ URL: ...{self.url_progress[24:]}.")
 
-            response = requests.get(url, headers=headers)
-            print(response.json())
+            response = requests.get(self.url_progress, headers=headers)
+            print(f"\nResponse:\n{json.dumps(response.json(), indent=4)}")
 
         except Exception as e:
             print(f"Error: {e}")
 
     # 3. Send prompt and retrieve completion.
-    def query(self, uid: str = "default-user", prompt: str = "", role: str = 'user') -> None:
+    def query(self, uid: str = "default-user", prompt: str = "", role: str = "user") -> None:
         if len(prompt) == 0:
             return
-        
-        # API Endpoint.
-        url = 'https://api.greptile.com/v2/query'
-        headers = {
-            'Authorization': f'Bearer {self.API_KEY}',
-            'X-Github-Token': self.GIT_TKN,
-            'Content-Type': 'application/json'
-        }
-        payload = {
-            "messages": [
-                {
-                    "id": uid,
-                    "content": prompt,
-                    "role": role
+        else:
+            try:
+                headers = {
+                    'Authorization': f'Bearer {self.API_KEY}',
+                    'X-Github-Token': self.GIT_TKN,
+                    'Content-Type': 'application/json'
                 }
-            ],
-            "repositories": [
-                {
-                    "remote": self.clip_remote,
-                    "repository": self.clip_repository,
-                    "branch": self.clip_branch
+                payload = {
+                    "messages": [
+                        {
+                            "id": uid,
+                            "content": prompt,
+                            "role": role
+                        }
+                    ],
+                    "repositories": [
+                        {
+                            "remote": self.clip_remote,
+                            "repository": self.clip_repository,
+                            "branch": self.clip_branch
+                        }
+                    ],
+                    "sessionId": f"{uid}-session-id" # Key sessionId retrieves chat history.
                 }
-            ],
-            "sessionId": f"{uid}-session-id"
-        }
-        # Key sessionId retrieves chat history.
+                print(f"\Requesting completion to prompt...\n   ├ prompt: {payload["messages"][0]["content"]}\n   ├ Remote: {payload["repositories"][0]["remote"]}\n   ├ Branch: {payload["repositories"][0]["branch"]}\n   └ Repository: {payload["repositories"][0]["repository"]}")
 
-        response = requests.post(url, json=payload, headers=headers)
-        print(response.json())
-        pass
+                response = requests.post(self.url_query, json=payload, headers=headers)
+                print(f"\nResponse:\n{json.dumps(response.json(), indent=4)}")
+
+                return response
+
+            except Exception as e:
+                print(f"Error: {e}")
