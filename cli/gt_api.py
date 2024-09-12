@@ -20,6 +20,7 @@ class API:
         self.clip_branch: str = None
 
         # API endpoints.
+        self.url_base: str = "https://api.greptile.com/v2/"
         self.url_index: str = "https://api.greptile.com/v2/repositories"
         self.url_progress: str = "https://api.greptile.com/v2/repositories/" # Call connect() to complete URL.
         self.url_query: str = "https://api.greptile.com/v2/query"
@@ -113,9 +114,9 @@ class API:
             print(f"    ├ {f'API_KEY found: {self.API_KEY[0]}...{self.API_KEY[-1]}.' if self.API_KEY else 'API_KEY not found'}")
             print(f"    └ {f'GIT_TOK found: {self.GIT_TOK[0]}...{self.GIT_TOK[-1]}.' if self.GIT_TOK else 'GIT_TOK not found'}")
 
-
             # If entries are not empty, return True.
             valid_entries: bool = self.clip_user != "" and self.clip_remote != "" and self.clip_repository != "" and self.clip_branch != ""
+            print(f"\nInput Check:\n    username: {self.clip_user != ""}\n    remote: {self.clip_remote != ""}\n    repository: {self.clip_repository != ""}\n    branch: {self.clip_branch != ""}\n    valid: {valid_entries}\n    return: {"save" if valid_entries else "dont save"}")
             return "save" if valid_entries else "dont save"
 
         except Exception as e:
@@ -126,9 +127,9 @@ class API:
         if mode == "CLI":
             try:
                 headers: dict = {
-                    'Authorization': f'Bearer {self.API_KEY}',
-                    'X-Github-Token': self.GIT_TOK,
-                    'Content-Type': 'application/json'
+                    "Authorization": f"Bearer {self.API_KEY}",
+                    "X-Github-Token": self.GIT_TOK,
+                    "Content-Type": "application/json"
                 }
                 payload: dict = {
                     "remote": self.clip_remote,
@@ -153,11 +154,11 @@ class API:
             # Encode and append repository identifier for indexing progress endpoint URL.
             repo_id: str = f"{self.clip_remote}:{self.clip_branch}:{self.clip_repository}"
             repo_id = urllib.parse.quote(repo_id, safe="")
-            self.url_progress += repo_id
+            self.url_progress = self.url_base + "repositories/" + repo_id
 
             headers: dict = {
-                'Authorization': f'Bearer {self.API_KEY}',
-                'X-Github-Token': self.GIT_TOK
+                "Authorization": f"Bearer {self.API_KEY}",
+                "X-Github-Token": self.GIT_TOK
             }
             print(f"\nChecking indexing progress:\n    └ URL: ...{self.url_progress[24:]}.")
 
@@ -169,17 +170,16 @@ class API:
 
     # 3. Send prompt and retrieve completion.
     def query(self, uid: str = "default-user", prompt: str = "", role: str = "user") -> None:
-        print(f"query() reached. Passing prompt of type {type(prompt)} and length {len(prompt)}.")
         if len(prompt) == 0:
             return
         else:
             try:
-                headers = {
-                    'Authorization': f'Bearer {self.API_KEY}',
-                    'X-Github-Token': self.GIT_TOK,
-                    'Content-Type': 'application/json'
+                headers: dict = {
+                    "Authorization": f"Bearer {self.API_KEY}",
+                    "X-Github-Token": self.GIT_TOK,
+                    "Content-Type": "application/json"
                 }
-                payload = {
+                payload: dict = {
                     "messages": [
                         {
                             "id": uid,
@@ -214,16 +214,28 @@ class API:
             return
         else:
             try:
-                headers = {
-                    'Authorization': f'Bearer {self.API_KEY}',
-                    'X-Github-Token': self.GIT_TOK,
-                    'Content-Type': 'application/json'
+                # Prompt engineering responses for public use.
+                prompt_engineering: list = [
+                    "Response Guidelines: ",
+                    "Your name is grep. Thus, do not adopt any other names given in this prompt. ",
+                    "The maximum length of this response should be no more than 2000 characters. ",
+                    "Ideally, keep the response within 1-5 paragraphs. ",
+                    "Do not respond with profanity or insensitive diction. ",
+                    "Do not make any insensitive remarks regarding race, age, gender, and/or sexual orientation. ",
+                    ""
+                ]
+                prompt_attachment: str = "".join(prompt_engineering)
+
+                headers: dict= {
+                    "Authorization": f"Bearer {self.API_KEY}",
+                    "X-Github-Token": self.GIT_TOK,
+                    "Content-Type": 'application/json'
                 }
-                payload = {
+                payload: dict = {
                     "messages": [
                         {
                             "id": uid,
-                            "content": prompt,
+                            "content": prompt + prompt_attachment,
                             "role": role
                         }
                     ],

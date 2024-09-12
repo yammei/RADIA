@@ -28,8 +28,6 @@ class Session:
 
         @self.client.event
         async def on_message(message) -> None:
-            # print(f"Message received: {message.content}")
-
             # Prevent the bot from self-feedback interactions.
             if message.author == self.client.user:
                 return
@@ -37,15 +35,15 @@ class Session:
             # Response logic for various message prefixes.
             if message.content[:5] == "grep!":
                 prompt: str = message.content[5:]
-                await message.channel.send(f"Hi, how can I help you?\nAsk me a question using the prefix ``grep?`` followed by your question!")
+                await message.reply(f"Hi, how can I help you?\nAsk me a question using the prefix ``grep?`` followed by your question!", mention_author=False)
             elif message.content[:5] == "grep?":
                 prompt: str = message.content[5:]
-                posted_message = await message.channel.send(f"Of course, {message.author.display_name}!\n\n<a:typing:1283792220108882024> **Greptile** generating response...\n")
+                posted_message = await message.reply(f"<a:typing:1283792220108882024> **Greptile** generating response...", mention_author=False)
                 response: str = await self.greptile_API_query(prompt)
-                # await message.channel.send(f"Response:\n{response}")
-                await posted_message.edit(content=f"{response}")
+                await posted_message.edit(content=f"Hi <@{message.author.id}>!\n{response}")
             else:
                 return
+
 
     async def greptile_API_query(self, prompt: str) -> any:
         if api.check(source="discord"):
@@ -53,7 +51,7 @@ class Session:
             print(prompt)
             response: str = await api.discordQuery(prompt=prompt)
             print(f"Returning from greptile_API_query().")
-            return response
+            return response if len(response) < 2000 else response[:1995]+"..."
         else:
             return "Unable to access Greptile API. Please verify all credentials are valid/active.\n Please refer to the setup documentation on how to use Greptile API CLI & Discord Integration: https://github.com/yammei/greptile-ai/blob/main/README.md"
 

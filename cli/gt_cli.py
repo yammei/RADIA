@@ -7,11 +7,11 @@ from InquirerPy import prompt
 api = API()
 
 # Main process.
-def main():
+def main() -> None:
     menu()
 
 # Main menu.
-def menu():
+def menu() -> None:
     while True:
         clear_terminal()
         questions = [
@@ -31,7 +31,7 @@ def menu():
         choose_menu(answer)
 
 # If available, prompt if user wants to use previous configurations.
-def load_config():
+def load_config() -> bool:
     clear_terminal()
     questions = [
         {
@@ -47,7 +47,7 @@ def load_config():
     return True if prompt(questions)["option"].startswith("1") else False
 
 # If available, prompt if user wants to save current configurations.
-def save_config():
+def save_config() -> bool:
     clear_terminal()
     questions = [
         {
@@ -64,17 +64,18 @@ def save_config():
     return True if prompt(questions)["option"].startswith("1") else False
 
 # Menu choice logic.
-def choose_menu(option):
+def choose_menu(option) -> None:
     # Check for repository access credentials and configurations.
+    # NO SAVED CONFIG: Manually input config. Saves config input if user agrees.
+    # SAVED CONFIG: Automatically load config if user agrees, else manually input config.
     if "1" in option:
+        def manual(): api.save() if (save_config() if api.connect(mode="manual") == "save" else False) else None
+        def automatic(): api.load() if load_config() else manual()
         # Check for saved config.
         if api.check(source="cli"):
-            # SAVED CONFIG: Reload config if user agrees, else manually input config.
-            api.load() if load_config() else api.connect(mode="manual")
+            automatic()
         else:
-            # NO SAVED CONFIG: Manually input config. Saves config input if user agrees.
-            api.save() if (save_config() if api.connect(mode="manual") == "save" else False) else None
-
+            manual()
     # Repository indexing.
     elif "2" in option:
         api.index()
@@ -85,15 +86,18 @@ def choose_menu(option):
 
     # Query user prompts.
     elif "4" in option:
-        prompt: str = input("Enter prompt (e.g., Help me understand this codebase.):")
+        prompt: str = input("Enter prompt (e.g., 'Help me understand this codebase.'): ")
         api.query(prompt=prompt)
+        print(f"\nAutomatically returning to menu in 15s...")
+        time.sleep(15)
+        return
 
     # Time out.
-    print(f"\nAutomatically returning to menu in 10s...")
-    time.sleep(10)
+    print(f"\nAutomatically returning to menu in 5s...")
+    time.sleep(5)
 
 # Windows and Mac compatible terminal clearing.
-def clear_terminal():
+def clear_terminal() -> None:
     if platform.system() == "Windows":
         os.system('cls')
     else:
