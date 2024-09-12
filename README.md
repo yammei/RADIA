@@ -1,11 +1,12 @@
-# ｡ﾟ•꒰ Greptile CLI & Discord Integration ꒱•  ｡ﾟ
+# ｡ﾟ•꒰ GrepCord: Greptile CLI & Discord Integration ꒱•  ｡ﾟ
 <div id="top"/>
 Repo Author: <b>Mei Zhang</b> <sup>[<a href="https://www.linkedin.com/in/mei-zh">Linkedin</a>]</sup><br>
 Last Updated: <i>Sept 9, 2024</i><br>
-Author Notes: Thank you to <b>@Daksh</b> <sup>[<a href="https://www.linkedin.com/in/dakshg/">Linkedin</a>]</sup> for sponsoring API usage.
+Author Notes: Thank you to <b>@Daksh</b> <sup>[<a href="https://www.linkedin.com/in/dakshg/">Linkedin</a>]</sup> for sponsoring API usage.<br><br>
+
+[**Beta v0.9 Release**] Bot is functional and only needs a few more edge cases covered. Try GrepCord at the <a href="https://discord.gg/BYB3p5N88P">Discord Demo Server</a>.
 
 <h2>Doc Index</h2>
-
 
 <ul><ul style="list-style-type: none;">
   <li><code><a href="#i">Description</a></code></li>
@@ -16,6 +17,10 @@ Author Notes: Thank you to <b>@Daksh</b> <sup>[<a href="https://www.linkedin.com
 <h2 id="i">I. Description </h2>
 This <code>README.md</code> details the step-by-step installation process for the Greptile CLI & Discord integration.<br><br>
 This project streamlines API setup into a user-friendly command line interface (CLI), removing the hassle of API integration. Additionally, this repository contains a Discord bot, allowing users to use Greptile AI in a Discord channel and collaborate with other developers.
+
+<br><br>
+<i>Image: GrepCord (v0.9) terminal and Discord interface.</i>
+<img src="public/grepcord_feature.png" alt="grepcord feature banner"/>
 
 <h2 id="ii">II. Installation: Greptile CLI</h2>
 
@@ -69,16 +74,16 @@ Setup Python a virtual environment to store Python dependencies (skip if you alr
 For Mac users:
 ```bash
 cd ./cli/
-python -m venv venv
-source venv/bin/activate
+python -m .env .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
 For Windows users:
 ```bash
 cd ./cli/
-python -m venv venv
-venv\Scripts\activate
+python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -188,14 +193,16 @@ My configurations:
 
 Automatically returning to menu in 10s...
 ```
-</ul>
 
 Dev Packaging
+
 
 ```bash
 pip install setuptools wheel
 python -m build
 
 ```
+
+</ul>
 
 <br><a href="#top">Back to Top</a>

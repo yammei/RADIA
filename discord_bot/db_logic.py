@@ -51,7 +51,7 @@ class Session:
             print(prompt)
             response: str = await api.discordQuery(prompt=prompt)
             print(f"Returning from greptile_API_query().")
-            return response if len(response) < 2000 else response[:1995]+"..."
+            return response if len(response) < 2000 else response[:1900]+"..."
         else:
             return "Unable to access Greptile API. Please verify all credentials are valid/active.\n Please refer to the setup documentation on how to use Greptile API CLI & Discord Integration: https://github.com/yammei/greptile-ai/blob/main/README.md"
 
