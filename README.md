@@ -4,8 +4,8 @@ Repo Author: <b>Mei Zhang</b> <sup>[<a href="https://www.linkedin.com/in/mei-zh"
 Last Updated: <i>Sept 9, 2024</i><br>
 Author Notes: Thank you to <b>@Daksh</b> <sup>[<a href="https://www.linkedin.com/in/dakshg/">Linkedin</a>]</sup> for sponsoring API usage.<br><br>
 
-[**Beta v0.9 Release**] Bot is functional and only needs a few more edge cases covered. Try GrepCord at the <a href="https://discord.gg/BYB3p5N88P">Discord Demo Server</a>.<br>
-Update: API key expired. Grep bot momentarily down for maintenance in the meantime. You can still see how it did work on the server though.
+[**Update**] API key expired. Grep bot momentarily down for maintenance in the meantime. You can still see how it did work on the server though.<br>
+[**Beta v0.9 Release**] Bot is functional and only needs a few more edge cases covered. Try GrepCord at the <a href="https://discord.gg/BYB3p5N88P">Discord Demo Server</a>.
 
 <h2>Doc Index</h2>
 
