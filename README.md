@@ -167,10 +167,10 @@ File config.json not found.
 ```bash
 ? Would you like to save these repository access configurations?
 ❯ 1: Yes, save these configurations (checking API credentials in the future will prompt to load the saved configu
-2: No, don't save these configurations.
+2: No, do not save these configurations.
+```
 
-...
-
+```bash
 ? Would you like to save these repository access configurations? 1: Yes, save these configurations (checking API
 credentials in the future will prompt to load the saved configurations).
 
@@ -189,5 +189,13 @@ My configurations:
 Automatically returning to menu in 10s...
 ```
 </ul>
+
+Dev Packaging
+
+```bash
+pip install setuptools wheel
+python -m build
+
+```
 
 <br><a href="#top">Back to Top</a>

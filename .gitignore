@@ -8,3 +8,5 @@ logs/*
 cli/logs/*
 __pycache__
 config.json
+dist
+grepcord.egg-info
