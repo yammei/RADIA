@@ -74,7 +74,6 @@ Setup Python a virtual environment to store Python dependencies (skip if you alr
 
 For Mac users:
 ```bash
-cd ./cli/
 python -m .env .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -82,7 +81,6 @@ pip install -r requirements.txt
 
 For Windows users:
 ```bash
-cd ./cli/
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
@@ -129,25 +127,57 @@ Note: By using the option, <code>2: Index Repository</code>, Greptile will store
 <h3>1. Setup .env file.</h3>
 
 <ul style="list-style-type: none;">
-  Instructions coming soon.
+
+From the root project directory <code>GreptileAI</code> and navigate to the <code>discord_bot</code> folder.
+```bash
+cd discord_bot
+touch .env
+```
+
+The Discord bot token can be found in <a href="https://discord.com/developers/applications">Discord's development portal</a>.
+```bash
+DIS_TOK=discord_app_token
+```
 </ul>
 
 <br><h3>2. Setup Python virtual environment.</h3>
 
 <ul style="list-style-type: none;">
-  Instructions coming soon.
+
+For Mac users:
+```bash
+python -m .env .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+For Windows users:
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
 </ul>
 
-<br><h3>3. Execute the Discord bot's run-time.</h3>
+<br><h3>3. Start using Greptile bot.</h3>
 
 <ul style="list-style-type: none;">
-  Instructions coming soon.
+  Instructions will be written. 
+  TL;DR - Allow the bot to have message and read intent.
 </ul>
 
-<br><h3>4. Start using Greptile bot.</h3>
+
+<br><h3>4. Activate the Discord bot's online presence.</h3>
 
 <ul style="list-style-type: none;">
-    <a href="https://discord.com/oauth2/authorize?client_id=1283119830186070152&permissions=8&integration_type=0&scope=bot">Discord Bot Invite Link</a>
+
+Invite the Discord bot to a server in which you own or have the permissions to invite bots.
+
+This will utilize the Discord token to log in and become active.
+
+```bash
+python db_run.py
+```
 </ul>
 
 <br><h2 id="iv">IV. Features: Greptile CLI</h2>
