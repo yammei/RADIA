@@ -1,4 +1,4 @@
-# ｡ﾟ•꒰ GrepCord: Greptile CLI & Discord Integration ꒱•  ｡ﾟ
+# ｡ﾟ•꒰ RADIA: Greptile CLI & Discord Integration ꒱•  ｡ﾟ
 <div id="top"/>
 Repo Author: <b>Mei Zhang</b> <sup>[<a href="https://www.linkedin.com/in/mei-zh">Linkedin</a>]</sup><br>
 Last Updated: <i>Sept 9, 2024</i><br>
